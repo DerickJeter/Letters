@@ -1,4 +1,4 @@
-﻿using Sabio.Data;
+using Sabio.Data;
 using Sabio.Data.Providers;
 using Sabio.Models;
 using Sabio.Models.Domain;
@@ -33,8 +33,9 @@ namespace Sabio.Services
             },
             delegate (IDataReader reader, short set)
             {
-                Letters letters = Mapper(reader);
-                totalCount = reader.GetSafeInt32(26);
+                int index = 0;
+                Letters letters = Mapper(reader, ref index);
+                if (totalCount==0) totalCount = reader.GetSafeInt32(index++);
                 if (lettersList == null)
                 {
                     lettersList = new List<Letters>();
@@ -48,10 +49,9 @@ namespace Sabio.Services
             return pagedList;
         }
 
-        private static Letters Mapper(IDataReader reader)
+        private static Letters Mapper(IDataReader reader, ref int index)
         {
             Letters letters = new Letters();
-            int index = 0;
 
             letters.Id = reader.GetSafeInt32(index++);
             letters.Letter = reader.GetSafeString(index++);
